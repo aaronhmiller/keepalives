@@ -37,8 +37,8 @@ class AsanaLoginAutomation {
     this.page = await context.newPage();
 
     // Enable verbose logging
-    this.page.on('console', msg => console.log('Browser console:', msg.text()));
-    this.page.on('pageerror', err => console.error('Browser page error:', err));
+    //this.page.on('console', msg => console.log('Browser console:', msg.text()));
+    //this.page.on('pageerror', err => console.error('Browser page error:', err));
   }
 
   async login(credentials: AsanaCredentials) {
@@ -124,19 +124,6 @@ class AsanaLoginAutomation {
 
       if (!currentUrl.includes('app.asana.com/0/')) {
         throw new Error('Login may have failed - not on dashboard URL');
-      }
-
-      // Try multiple selectors that might indicate successful login
-      try {
-        await Promise.race([
-          this.page.waitForSelector('.Dashboard', { timeout: 5000 }),
-          this.page.waitForSelector('.Topbar', { timeout: 5000 }),
-          this.page.waitForSelector('[data-test-id="sidebar"]', { timeout: 5000 }),
-          this.page.waitForSelector('.NavigationBar', { timeout: 5000 }),
-          this.page.waitForSelector('[data-test-id="home-page"]', { timeout: 5000 })
-        ]);
-      } catch (e) {
-        console.log('Warning: Could not detect standard dashboard elements, but URL suggests successful login');
       }
 
       // Take a success screenshot for verification
