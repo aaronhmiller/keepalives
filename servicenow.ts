@@ -17,7 +17,7 @@ if (!USERNAME || !PASSWORD) {
 async function loginToServiceNow() {
   console.log("Launching browser...");
   const browser = await firefox.launch({
-    headless: false, // Set to true for production use
+    headless: true, // Set to true for production use
   });
 
   try {
@@ -41,7 +41,7 @@ async function loginToServiceNow() {
     // Wait for navigation to complete
     await page.waitForLoadState('networkidle');
 
-    console.log("Login successful!");
+    console.log(`Login successful @ [${new Date().toLocaleString()}]!`);
 
     // Optional: Add a delay to keep the browser open for a few seconds
     await new Promise(resolve => setTimeout(resolve, 5000));
