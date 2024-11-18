@@ -94,13 +94,26 @@ class AsanaLoginAutomation {
       ]);
 
       console.log('Waiting for successful login...');
-      await this.page.waitForURL(
-        url => url.includes('app.asana.com/0/') || url.includes('app.asana.com/home/'),
-        {
-          timeout: 45000,
-          waitUntil: 'networkidle',
-        }
-      );
+      console.log('Waiting for redirect after login...');
+      try {
+        await this.page.waitForURL(
+          url => {
+            const urlStr = url.toString();
+            console.log('Checking URL:', urlStr);
+            return urlStr.includes('app.asana.com/0/') || 
+                   urlStr.includes('app.asana.com/home/') ||
+                   urlStr.includes('app.asana.com/workspace');
+          },
+          {
+            timeout: 45000,
+            waitUntil: 'networkidle',
+          }
+        );
+      } catch (e) {
+        console.error('URL wait failed:', e);
+        console.log('Current URL:', await this.page.url());
+        throw e;
+      }
 
       // Wait a moment for the page to stabilize
       await this.page.waitForTimeout(5000);
