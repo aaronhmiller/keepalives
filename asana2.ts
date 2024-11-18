@@ -132,7 +132,7 @@ class AsanaLoginAutomation {
         fullPage: true 
       });
 
-      console.log('Successfully logged into Asana');
+      console.log(`Login successful @ [${new Date().toLocaleString()}]!`);
       
     } catch (error) {
       console.error('Login failed:', error);
