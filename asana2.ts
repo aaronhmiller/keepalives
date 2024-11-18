@@ -94,19 +94,43 @@ class AsanaLoginAutomation {
       ]);
 
       console.log('Waiting for successful login...');
-      await this.page.waitForURL('https://app.asana.com/**', {
-        timeout: 30000,
-        waitUntil: 'networkidle',
-      });
+      await this.page.waitForURL(
+        url => url.includes('app.asana.com/0/') || url.includes('app.asana.com/home/'),
+        {
+          timeout: 45000,
+          waitUntil: 'networkidle',
+        }
+      );
 
-      // Additional check for successful login
-      const dashboardElement = await this.page.waitForSelector('.Dashboard, .Topbar', {
-        timeout: 10000,
-      });
+      // Wait a moment for the page to stabilize
+      await this.page.waitForTimeout(5000);
 
-      if (!dashboardElement) {
-        throw new Error('Failed to detect successful login');
+      // Check current URL to verify login success
+      const currentUrl = this.page.url();
+      console.log('Current URL after login:', currentUrl);
+
+      if (!currentUrl.includes('app.asana.com/0/')) {
+        throw new Error('Login may have failed - not on dashboard URL');
       }
+
+      // Try multiple selectors that might indicate successful login
+      try {
+        await Promise.race([
+          this.page.waitForSelector('.Dashboard', { timeout: 5000 }),
+          this.page.waitForSelector('.Topbar', { timeout: 5000 }),
+          this.page.waitForSelector('[data-test-id="sidebar"]', { timeout: 5000 }),
+          this.page.waitForSelector('.NavigationBar', { timeout: 5000 }),
+          this.page.waitForSelector('[data-test-id="home-page"]', { timeout: 5000 })
+        ]);
+      } catch (e) {
+        console.log('Warning: Could not detect standard dashboard elements, but URL suggests successful login');
+      }
+
+      // Take a success screenshot for verification
+      await this.page.screenshot({ 
+        path: 'login-success.png',
+        fullPage: true 
+      });
 
       console.log('Successfully logged into Asana');
       
