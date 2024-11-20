@@ -11,7 +11,7 @@ class LogzioLoginAutomation {
 
   async init() {
     this.browser = await firefox.launch({
-      headless: false,
+      headless: true,
       slowMo: 100,
     });
     
