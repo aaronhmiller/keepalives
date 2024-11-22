@@ -6,11 +6,11 @@ import { config as dotenvConfig } from "https://deno.land/x/dotenv@v3.2.2/mod.ts
 const env = dotenvConfig();
 
 const SERVICENOW_URL = "https://dev282630.service-now.com";
-const USERNAME = Deno.env.get("SERVICENOW_USERNAME") || env["SERVICENOW_USERNAME"];
-const PASSWORD = Deno.env.get("SERVICENOW_PASSWORD") || env["SERVICENOW_PASSWORD"];
+const USERNAME = Deno.env.get("SERVICENOW_USR") || env["SERVICENOW_USR"];
+const PASSWORD = Deno.env.get("SERVICENOW_PWD") || env["SERVICENOW_PWD"];
 
 if (!USERNAME || !PASSWORD) {
-  console.error("Please set SERVICENOW_USERNAME and SERVICENOW_PASSWORD in your .env file");
+  console.error("Please set SERVICENOW_USR and SERVICENOW_PWD in your .env file");
   Deno.exit(1);
 }
 
