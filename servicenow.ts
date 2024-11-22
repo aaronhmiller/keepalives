@@ -18,10 +18,18 @@ async function loginToServiceNow() {
   console.log("Launching browser...");
   const browser = await firefox.launch({
     headless: true, // Set to true for production use
+    args: [
+      '--disable-dev-shm-usage', // Helps with memory issues in containerized environments
+      '--no-sandbox',
+      '--disable-setuid-sandbox'
+    ]
   });
 
   try {
-    const context = await browser.newContext();
+    const context = await browser.newContext({
+      viewport: { width: 1920, height: 1080 }, // Set a standard viewport size
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/100.0', // Set a standard user agent
+    });
     const page = await context.newPage();
 
     console.log("Navigating to ServiceNow login page...");
