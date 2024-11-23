@@ -15,13 +15,12 @@ if (!USERNAME || !PASSWORD) {
 }
 
 async function loginToServiceNow() {
-  console.log("Launching browser...");
+  console.log("Launching firefox...");
   const browser = await firefox.launch({
     headless: true, // Set to true for production use
     args: [
       '--disable-dev-shm-usage', // Helps with memory issues in containerized environments
-      '--no-sandbox',
-      '--disable-setuid-sandbox'
+      '--no-sandbox'
     ]
   });
 
