@@ -1,5 +1,5 @@
 // servicenow.ts
-import { firefox } from "npm:playwright";
+import { chromium } from "npm:playwright";
 import { config as dotenvConfig } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
 
 // Load environment variables
@@ -15,8 +15,8 @@ if (!USERNAME || !PASSWORD) {
 }
 
 async function loginToServiceNow() {
-  console.log("Launching firefox...");
-  const browser = await firefox.launch({
+  console.log("Launching chromium...");
+  const browser = await chromium.launch({
     headless: true, // Set to true for production use
     args: [
       '--disable-dev-shm-usage', // Helps with memory issues in containerized environments
