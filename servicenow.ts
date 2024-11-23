@@ -47,7 +47,7 @@ async function loginToServiceNow() {
     await page.click('#sysverb_login');
 
     // Wait for navigation to complete
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     console.log(`Login successful @ [${new Date().toLocaleString()}]!`);
 
