@@ -19,95 +19,42 @@ async function loginToServiceNow() {
   const browser = await firefox.launch({
     headless: true,
     args: [
-      '--disable-dev-shm-usage', // Helps with memory issues in containerized environments
-      '--no-sandbox',
-      '--disable-setuid-sandbox'
+      '--disable-dev-shm-usage',
+      '--no-sandbox'
     ]
   });
 
   try {
     const context = await browser.newContext({
-      viewport: { width: 1920, height: 1080 }, // Set a standard viewport size
-      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Firefox/100.0', // Set a standard user agent
+      viewport: { width: 1920, height: 1080 },
+      userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      ignoreHTTPSErrors: true
     });
 
     const page = await context.newPage();
-
-    // Set longer timeout for navigation
-    page.setDefaultTimeout(60000); // 60 seconds
-    page.setDefaultNavigationTimeout(60000);
-
-    console.log("Navigating to ServiceNow login page...");
+    
+    console.log("Navigating to ServiceNow...");
     await page.goto(SERVICENOW_URL, {
-      waitUntil: 'networkidle',
-      timeout: 60000
-    });
-
-    // Wait for the login form to be ready
-    await page.waitForSelector('form[action="login.do"]', { state: 'visible' });
-
-    // More robust element waiting and filling
-    console.log("Waiting for username field...");
-    const userNameField = await page.waitForSelector('#user_name', {
-      state: 'visible',
+      waitUntil: 'domcontentloaded',
       timeout: 30000
     });
-    await userNameField?.click();
-    await page.waitForTimeout(500); // Small delay after click
-    await userNameField?.fill(USERNAME);
 
-    console.log("Waiting for password field...");
-    const passwordField = await page.waitForSelector('#user_password', {
-      state: 'visible',
+    // Wait for and fill login form
+    await page.fill('#user_name', USERNAME);
+    await page.fill('#user_password', PASSWORD);
+    await page.click('#sysverb_login');
+    
+    // Wait for navigation
+    await page.waitForNavigation({
+      waitUntil: 'domcontentloaded',
       timeout: 30000
     });
-    await passwordField?.click();
-    await page.waitForTimeout(500); // Small delay after click
-    await passwordField?.fill(PASSWORD);
 
-    console.log("Clicking login button...");
-    const loginButton = await page.waitForSelector('#sysverb_login', {
-      state: 'visible',
-      timeout: 30000
-    });
-    await loginButton?.click();
-
-    // Wait for navigation and verify login success
-    console.log("Waiting for navigation after login...");
-    await Promise.race([
-      page.waitForNavigation({ waitUntil: 'networkidle', timeout: 60000 }),
-      page.waitForSelector('div.navpage-header', { timeout: 60000 }) // Common ServiceNow header element
-    ]);
-
-    // Optional: Verify login success
-    const isLoggedIn = await page.waitForSelector('div.navpage-header', { 
-      state: 'visible',
-      timeout: 30000 
-    }).then(() => true).catch(() => false);
-
-    if (isLoggedIn) {
-      console.log("Login successful!");
-      
-      // Optional: Take a screenshot of the logged-in page
-      await page.screenshot({ path: 'login-success.png' });
-    } else {
-      console.log("Login might have failed - couldn't verify success element");
-      await page.screenshot({ path: 'login-failure.png' });
-    }
-
-    // Keep the browser open briefly to ensure everything loaded
-    await page.waitForTimeout(2000);
+    console.log("Login successful!");
 
   } catch (error) {
-    console.error("An error occurred:", error);
-    
-    // Take screenshot on error
-    try {
-      const page = await browser.contexts()[0].pages()[0];
-      await page.screenshot({ path: 'error-state.png' });
-    } catch (screenshotError) {
-      console.error("Couldn't take error screenshot:", screenshotError);
-    }
+    console.error("Error:", error.message);
+    throw error;
   } finally {
     await browser.close();
   }
