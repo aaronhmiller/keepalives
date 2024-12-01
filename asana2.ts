@@ -47,7 +47,7 @@ class AsanaLoginAutomation {
     try {
       console.log('Navigating to Asana...');
       const response = await this.page.goto('https://app.asana.com/', {
-        waitUntil: 'networkidle',
+        waitUntil: 'domcontentloaded',
         timeout: 30000,
       });
       
@@ -106,7 +106,7 @@ class AsanaLoginAutomation {
           },
           {
             timeout: 45000,
-            waitUntil: 'networkidle',
+            waitUntil: 'domcontentloaded',
           }
         );
       } catch (e) {
