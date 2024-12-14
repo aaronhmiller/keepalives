@@ -53,7 +53,7 @@ class LogzioLoginAutomation {
         waitUntil: 'networkidle',
       });
 
-      console.log('Successfully logged into Logz.io');
+      logWithTimestamp('Successfully logged into Logz.io');
 
     } catch (error) {
       console.error('Login failed:', error);
@@ -80,6 +80,12 @@ const loadEnv = async () => {
     }
   }
 };
+
+function logWithTimestamp(message: string, error: boolean = false) {
+  const timestamp = new Date().toISOString();
+  const logFn = error ? console.error : console.log;
+  logFn(`[${timestamp}] ${message}`);
+}
 
 async function main() {
   const automation = new LogzioLoginAutomation();
